@@ -1,0 +1,14 @@
+# SPM
+.build/
+.swiftpm/
+*.xcodeproj
+# library package — consumers resolve their own graph
+Package.resolved
+
+# libvpx build (Scripts/build-libvpx.sh) — the CLONE and INTERMEDIATES are reproducible and not
+# committed; the resulting Artifacts/vpx.xcframework IS committed (the shipped binary).
+Scripts/libvpx/
+Scripts/.build-libvpx/
+Scripts/.build.log
+
+.DS_Store

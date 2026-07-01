@@ -1,0 +1,4 @@
+module Cvpx {
+    header "vpx_shim.h"
+    export *
+}
