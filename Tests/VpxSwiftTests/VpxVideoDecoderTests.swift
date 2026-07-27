@@ -82,7 +82,8 @@ final class VpxVideoDecoderTests: XCTestCase {
 
         var frames: [CVPixelBuffer] = []
         try await VpxVideoDecoder().decodeStreaming(
-            codecID: "V_VP9", codecPrivate: nil, packets: packets) { frame in
+            codecID: "V_VP9", codecPrivate: nil,
+            packets: packets.map { ExternalVideoPacket(data: $0.data, ptsNanos: $0.ptsNanos) }) { frame in
             frames.append(frame.image)
         }
         XCTAssertEqual(frames.count, packets.count, "one visible frame per packet")

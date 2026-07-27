@@ -34,9 +34,15 @@ public enum VpxError: Error, CustomStringConvertible {
     /// The paired colour and alpha packets disagree on keyframe status, so a seek to that point
     /// would resolve colour but not transparency.
     case layerKeyframeMismatch(ptsTicks: Int64)
+    /// The decoded alpha stream is a different size than the colour frame it belongs to. Refused
+    /// rather than scaled: a resampled matte is a guess, and a wrong-sized one smears transparency
+    /// across the frame in a way that looks like a rendering bug rather than a malformed file.
+    case alphaGeometryMismatch(color: String, alpha: String)
 
     public var description: String {
         switch self {
+        case .alphaGeometryMismatch(let c, let a):
+            return "alpha stream is \(a) but the colour frame is \(c) — malformed alpha WebM"
         case .codecInit(let m):       return "vpx codec init failed: \(m)"
         case .decode(let m):          return "vpx decode failed: \(m)"
         case .unsupportedFormat(let f): return "vpx frame has unsupported pixel format \(f) (only 8-bit I420 supported)"

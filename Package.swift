@@ -38,7 +38,7 @@ let package = Package(
         // Both seams live in media-bridge. v0.3.0 exposed the `MediaImport` product and a public
         // `DecodedVideoFrame.init` (the decode side); v0.6.0 added `ExternalAlphaVideoEncoder`
         // (the write side), so that is the floor.
-        .package(url: "https://github.com/xocialize/media-bridge.git", from: "0.6.0"),
+        .package(url: "https://github.com/xocialize/media-bridge.git", from: "0.7.0"),
         // The WebM write side. matroska-swift is pure-Swift and MIT, so it adds no binary or
         // licence weight — and it is what keeps the muxer OUT of media-bridge, which deliberately
         // carries no codec binary and must not gain one transitively.
