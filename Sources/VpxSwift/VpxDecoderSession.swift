@@ -35,6 +35,18 @@ final class VpxDecoderSession {
 
     /// Decode one compressed packet and hand each resulting BGRA frame to `onImage` in display order.
     func decode(packet: Data, onImage: (CVPixelBuffer) throws -> Void) throws {
+        try decodeRaw(packet: packet) { imgPtr in
+            try onImage(try self.converter.makeBGRA(from: imgPtr))
+        }
+    }
+
+    /// Decode one packet and hand each resulting frame to `onImage` as libvpx's own planar image,
+    /// before any colour conversion.
+    ///
+    /// This is what a VP9 **alpha** stream needs: its luma plane IS the alpha channel, so running it
+    /// through the Yp'CbCr→RGB matrix would be actively wrong. The pointer is owned by libvpx and
+    /// valid only for the duration of the call.
+    func decodeRaw(packet: Data, onImage: (UnsafeMutablePointer<vpx_image_t>) throws -> Void) throws {
         try packet.withUnsafeBytes { (raw: UnsafeRawBufferPointer) in
             let base = raw.bindMemory(to: UInt8.self).baseAddress
             let err = vpx_codec_decode(&ctx, base, UInt32(raw.count), nil, 0)
@@ -42,8 +54,7 @@ final class VpxDecoderSession {
         }
         var iter: vpx_codec_iter_t? = nil
         while let imgPtr = vpx_codec_get_frame(&ctx, &iter) {
-            let pb = try converter.makeBGRA(from: imgPtr)
-            try onImage(pb)
+            try onImage(imgPtr)
         }
     }
 

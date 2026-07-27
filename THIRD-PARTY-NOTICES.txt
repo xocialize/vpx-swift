@@ -1,6 +1,13 @@
-libvpx — bundled in Artifacts/vpx.xcframework (VP9/VP8 decode-only, v1.16.0)
+libvpx — bundled in Artifacts/vpx.xcframework (VP9 encode + VP9/VP8 decode, v1.16.0)
 Source: https://github.com/webmproject/libvpx (tag v1.16.0)
 Built by Scripts/build-libvpx.sh
+
+The VP9 ENCODER is included, so this binary both decodes and encodes VP9. (VP8 encode is
+disabled; VP8 decode is included.) The BSD-3-Clause licence and the WebM PATENTS grant below
+already cover encoding — "make, have made, use, offer to sell, sell, import, transfer" is not
+limited to decode — so enabling the encoder raises no new licence or patent question. This
+note exists because an earlier revision described the binary as "decode-only", and that is
+no longer true.
 
 ================================ libvpx LICENSE ================================
 
