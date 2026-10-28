@@ -14,7 +14,7 @@ import Foundation
 final class VpxDecoderSession {
 
     private var ctx = vpx_codec_ctx_t()
-    private let converter = VpxI420ToBGRA()
+    private let converter: VpxI420ToBGRA
 
     init(codecID: String) throws {
         let iface: OpaquePointer?
@@ -24,6 +24,7 @@ final class VpxDecoderSession {
         default:      throw VpxError.codecInit("unsupported CodecID \(codecID)")
         }
         guard iface != nil else { throw VpxError.codecInit("\(codecID) decoder unavailable in libvpx build") }
+        converter = VpxI420ToBGRA(signalsColorSpace: codecID == "V_VP9")
 
         var cfg = vpx_codec_dec_cfg_t()          // w/h = 0 → derived from the stream
         cfg.threads = UInt32(max(1, min(4, ProcessInfo.processInfo.activeProcessorCount / 2)))

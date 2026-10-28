@@ -80,6 +80,25 @@ let result = try await MediaBridge.normalizeVideoToHEVC(input: webmURL, output: 
 
 Consumers that don't need VP9 depend on media-bridge alone and stay binary-free.
 
+### Which colour matrix a frame converts with
+
+A tagged VP9 stream converts as tagged: BT.601 / SMPTE-170 / SMPTE-240 → BT.601, everything else →
+BT.709. A stream that declares nothing (libvpx reports `VPX_CS_UNKNOWN`) follows the reference
+players:
+
+| Stream | Matrix |
+|---|---|
+| VP8 (no colour signalling at all — RFC 6386) | BT.601 |
+| untagged VP9, ≤ 576 lines (SD, up to PAL) | BT.601 |
+| untagged VP9, > 576 lines (HD) | BT.709 — the web default |
+
+`ColorMatrixTests` checks each case against ffmpeg's conversion of the same bitstream: the right matrix
+lands within 0.15–0.3 levels (mean |ΔRGB|), the wrong one 5–7 levels away. The encoder tags its output
+BT.709, which is what it converts with, so an SD transparent WebM is not read back as 601.
+
+*Changed in 0.3.1* (AB-A-0205): before, every untagged stream converted as BT.709, so VP8 and SD VP9
+came out ~6 levels off, and our own SD exports were untagged.
+
 ## What's in the box
 
 | Target | Role |

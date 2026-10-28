@@ -31,8 +31,8 @@ final class VpxBGRAToI420 {
     private static let bgraToARGB: [UInt8] = [3, 2, 1, 0]
 
     init() throws {
-        // Video-range BT.709: the web's default for VP9 colour, and what our decoder assumes when a
-        // stream declares nothing.
+        // Video-range BT.709: the web's default for VP9 colour. The encoder tags the stream BT.709
+        // (`VpxEncoderSession.Options.colorSpace`), so no decoder falls back to its SD guess of 601.
         var range = vImage_YpCbCrPixelRange(Yp_bias: 16, CbCr_bias: 128,
                                             YpRangeMax: 235, CbCrRangeMax: 240,
                                             YpMax: 235, YpMin: 16, CbCrMax: 240, CbCrMin: 16)

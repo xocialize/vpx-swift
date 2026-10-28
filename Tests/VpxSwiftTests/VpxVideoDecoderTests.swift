@@ -104,7 +104,7 @@ final class VpxVideoDecoderTests: XCTestCase {
 
     /// Minimal IVF (DKIF) reader: 32-byte file header, then per-frame 12-byte header + payload. Enough to
     /// feed raw VP9 frames to the decoder without any container library.
-    private static func parseIVF(_ data: Data) throws -> [(data: Data, ptsNanos: Int64)] {
+    static func parseIVF(_ data: Data) throws -> [(data: Data, ptsNanos: Int64)] {
         let b = [UInt8](data)
         guard b.count > 32, b[0] == 0x44, b[1] == 0x4B, b[2] == 0x49, b[3] == 0x46 else {
             throw NSError(domain: "IVF", code: 1, userInfo: [NSLocalizedDescriptionKey: "not an IVF file"])

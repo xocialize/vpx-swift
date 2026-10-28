@@ -43,6 +43,10 @@ final class VpxEncoderSession {
         var threads: UInt32 = 4
         /// Alpha must be full range so 255 stays 255. Colour uses the web's usual studio range.
         var fullRange: Bool = false
+        /// Written into the VP9 header so a decoder never has to guess the matrix. `VpxBGRAToI420`
+        /// converts with BT.709 at every size; left untagged, an SD export would be read back as
+        /// BT.601 by ffmpeg, browsers and our own decoder.
+        var colorSpace: vpx_color_space_t = VPX_CS_BT_709
         /// Milliseconds per timestamp tick is the Matroska default too, so the two agree without
         /// rescaling.
         var timebaseDenominator: Int32 = 1_000
@@ -85,6 +89,7 @@ final class VpxEncoderSession {
         try control(VP8E_SET_CPUUSED, options.cpuUsed)
         try control(VP9E_SET_COLOR_RANGE, options.fullRange ? Int32(VPX_CR_FULL_RANGE.rawValue)
                                                            : Int32(VPX_CR_STUDIO_RANGE.rawValue))
+        try control(VP9E_SET_COLOR_SPACE, Int32(options.colorSpace.rawValue))
         // Row-based multithreading; harmless when g_threads is 1.
         try? control(VP9E_SET_ROW_MT, 1)
     }
